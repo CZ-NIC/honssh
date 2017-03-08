@@ -58,10 +58,10 @@ declare id_dsa="id_dsa"
 declare honssh_log="logs/honssh.log"
 declare daily_log="logs/$(date +"%Y%m%d")"
 declare dl_log="logs/downloads.log"
-declare honssh_pid="honssh.pid"
 declare proddate="2014, March 1"
 declare author="Are Hansen"
 declare version="1.2.5-1"
+declare honssh_pid="/var/run/honssh.pid"
 
 
 function cleanup_honssh()
