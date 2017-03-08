@@ -36,6 +36,7 @@ from hpfeeds import hpfeeds
 import datetime
 import time
 import os
+import shutil
 import struct
 import re
 import subprocess
@@ -98,6 +99,7 @@ class Output():
         dt = self.getDateTime()
         log.msg("[OUTPUT] Lost Connection with the attacker: %s" % self.endIP)
         if not self.passwordTried:
+            log.msg("[OUTPUT] login - no credentials were tried")
             if self.cfg.get('txtlog', 'enabled') == 'true':
                 txtlog.authLog(dt, self.cfg.get('folders', 'log_path') + "/" + datetime.datetime.now().strftime("%Y%m%d"), self.endIP, '', '', False)
             
@@ -195,6 +197,7 @@ class Output():
                 if self.cfg.get('app_hooks', 'command_entered') != '':
                     cmdString = self.cfg.get('app_hooks', 'command_entered') + " COMMAND_ENTERED " + dt + " " + self.endIP + " '" + command + "'"
                     threads.deferToThread(self.runCommand, cmdString)
+            log.msg('XXX ' + command)
             if self.cfg.get('download','active') == 'true':
                 if command.startswith('wget '):
                     command = command[4:]
@@ -403,6 +406,9 @@ class Output():
         log.msg("Downloaded: %s" % outFile)
         txtlog.downloadLog(dt, logPath, theIP, link, outFile, theSize, theSHA256)
 
+        if not os.path.exists('downloads/' + theSHA256):
+            shutil.copy(outFile, 'downloads/' + theSHA256)
+
         if re.search("\.sh$", outFile):
             m = magic.open(magic.MAGIC_NONE)
             m.load()
@@ -415,6 +421,8 @@ class Output():
                         links = re.findall("(http\S*) ", line)
 
                         for l in links:
+                            # sometimes there is trailing ; char
+                            l = re.sub(';$', '', l)
                             log.msg("XXX " + l)
                             self.activeDownload(channelName, uuid, l, '', '')
                 f.close()
