@@ -146,8 +146,8 @@ class Output():
             self.dbLog.handleClientVersion(self.sessionID, self.version)
                     
         if self.cfg.get('hpfeeds', 'enabled') == 'true':
-            self.hpLog.handleLoginSucceeded(dt, username, password)
             self.hpLog.createSession(dt, self.sessionID, self.endIP, self.endPort, self.honeyIP, self.honeyPort)
+            self.hpLog.handleLoginSucceeded(dt, username, password)
             self.hpLog.handleClientVersion(self.version)
             
         if self.cfg.has_option('app_hooks', 'login_successful'):

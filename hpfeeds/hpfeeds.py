@@ -206,6 +206,7 @@ class HPLogger():
         return session
     
     def handleConnectionLost(self, dt):
+        return
         log.msg('[HPFEEDS] - publishing metadata to hpfeeds')
         meta = self.sessionMeta
         meta['endTime'] = dt
@@ -214,14 +215,14 @@ class HPLogger():
         threads.deferToThread(self.client.publish, HONSSHSESHCHAN, **meta)
 
     def handleLoginFailed(self, dt, username, password):
+        return
         authMeta = {'sensor_name': self.sensor_name, 'datetime': dt,'username': username, 'password': password, 'success': False}
         log.msg('[HPFEEDS] - authMeta: ' + str(authMeta))
         threads.deferToThread(self.client.publish, HONSSHAUTHCHAN, **authMeta)
 
     def handleLoginSucceeded(self, dt, username, password):
-        authMeta = {'sensor_name': self.sensor_name, 'datetime': dt,'username': username, 'password': password, 'success': True}
-        log.msg('[HPFEEDS] - authMeta: ' + str(authMeta))
-        threads.deferToThread(self.client.publish, HONSSHAUTHCHAN, **authMeta)
+        meta = {'username': username, 'password': password, 'success': True, 'peerIP': self.sessionMeta['connection']['peerIP']}
+        threads.deferToThread(self.client.publish, HONSSHAUTHCHAN, **meta)
         
     def channelOpened(self, dt, uuid, channelName):
         self.sessionMeta['channels'].append({'name': channelName, 'uuid': uuid, 'startTime': dt, 'commands': []})
