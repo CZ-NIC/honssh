@@ -128,7 +128,6 @@ class SSH(baseProtocol.BaseProtocol):
                                     cred = cred.strip().split(' - ')
                                     if cred[0] == self.username and cred[1] == self.password:
                                         rand = 1
-                                        self.out.writePossibleLink(cred[2:])
                                         break
 
                         if rand == 1:
